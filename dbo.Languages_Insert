@@ -1,0 +1,39 @@
+USE [C16]
+GO
+/****** Object:  StoredProcedure [dbo].[Languages_Insert]    Script Date: 6/22/16 3:07:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROC [dbo].[Languages_Insert]
+@UserId nvarchar(128)
+, @LanguageName nvarchar(100)
+, @LanguageAbbreviation nvarchar(20) = null
+, @DisplayOrder int = null
+, @Id int OUTPUT
+AS
+
+BEGIN
+	/*
+		DECLARE	@return_value int
+
+		DECLARE @Id int
+
+		EXEC	@return_value = [dbo].[Languages_Insert]
+				@UserId = N'alkjdfsjhk',
+				@LanguageName = N'English',
+				@LanguageAbbreviation = N'Eng',
+				@DisplayOrder = 1,
+				@Id = @Id OUTPUT
+
+		SELECT	'Return Value' = @return_value,
+				'Id' = @Id
+	*/
+
+INSERT dbo.Languages (UserId, LanguageName, LanguageAbbreviation, DisplayOrder)
+VALUES (@UserId, @LanguageName, @LanguageAbbreviation, @DisplayOrder)
+
+SELECT @Id = SCOPE_IDENTITY()
+
+END
