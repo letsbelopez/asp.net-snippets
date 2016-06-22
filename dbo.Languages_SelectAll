@@ -1,0 +1,17 @@
+USE [C16]
+GO
+/****** Object:  StoredProcedure [dbo].[Languages_SelectAll]    Script Date: 6/22/16 3:08:07 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROC [dbo].[Languages_SelectAll]
+
+AS
+BEGIN
+
+SELECT LanguageName, LanguageAbbreviation, DisplayOrder, Id
+FROM dbo.Languages
+ORDER BY DisplayOrder, LanguageName
+
+END
