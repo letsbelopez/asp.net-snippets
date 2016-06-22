@@ -1,0 +1,281 @@
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Angular";
+}
+
+<div class="content-heading">
+    <div class="pull-right">
+        <div class="btn-group">
+            <button type="button" data-toggle="dropdown" class="btn btn-default">English</button>
+            <ul role="menu" class="dropdown-menu dropdown-menu-right animated fadeInUpShort">
+                <li>
+                    <a href="#" data-set-lang="en">English</a>
+                </li>
+                <li>
+                    <a href="#" data-set-lang="es">Spanish</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- START Language list-->
+    Languages
+</div>
+
+<div class="row" data-ng-controller="languageController as languageCtrl">
+    <div class="col-sm-6">
+        <div ng-repeat="language in languageCtrl.languages track by language.id" class="list-group mb0">
+            <div class="list-group-item">
+                <a data-ng-click="languageCtrl.selectLanguage(language)"
+                   href="">
+                    {{language.languageName}} ({{language.languageAbbreviation}}) - {{language.displayOrder}}
+                </a>
+                <button ng-click="languageCtrl.selectLanguage(language)"
+                        class="btn btn-primary btn-xs edit pull-right align-middle">
+                    <i class="fa fa-edit"></i>
+                    Edit
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="" data-ng-if="languageCtrl.languageFormVisible" data-ng-include="'/scripts/app/admin/newLanguage.html'">
+        </div>
+        <button type="button" ng-show="!languageCtrl.languageFormVisible" data-ng-click="languageCtrl.showLanguageForm()" class="btn btn-success">
+            Add New Language
+        </button>
+    </div>
+</div>
+
+<script type="text/ng-template" id="/scripts/app/admin/newLanguage.html">
+    <div class="panel panel-dark">
+        <div class="panel-heading">
+            {{languageCtrl.headingInfo}}
+        </div>
+        <div class="panel-body">
+            <form role="form" id="languageForm" name="languageCtrl.languageForm" novalidate>
+                <div class="form-group">
+                    <label> Name</label>
+                    <input type="text" class="form-control ng-class:{'error': languageCtrl.languageForm.languageName.$dirty && !languageCtrl.languageForm.languageName.$valid}"
+                           ng-model="languageCtrl.language.languageName"
+                           id="languageName"
+                           name="languageName"
+                           placeholder="Language Name"
+                           ng-maxlength="50"
+                           required>
+                    <div role="alert" class="help-inline error">
+                        <span class="error" ng-show="languageCtrl.languageForm.languageName.$dirty && languageCtrl.languageForm.languageName.$error.required">Name is required</span>
+                        <span class="error" ng-show="languageCtrl.languageForm.languageName.$dirty && languageCtrl.languageForm.languageName.$error.maxlength">Must be under 50 characters long</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label> Abbreviation</label>
+                    <input type="text" class="form-control ng-class:{'error': languageCtrl.languageForm.languageAbbreviation.$dirty && !dashboard.languageForm.languageAbbreviation.$valid}"
+                           ng-model="languageCtrl.language.languageAbbreviation"
+                           id="languageAbbr"
+                           name="languageAbbreviation"
+                           placeholder="Language Abbreviation"
+                           ng-maxlength="20"
+                           required>
+                    <div role="alert" class="help-inline error">
+                        <span class="error" ng-show="languageCtrl.languageForm.languageAbbreviation.$dirty && languageCtrl.languageForm.languageAbbreviation.$error.required">Abbreviation is required</span>
+                        <span class="error" ng-show="languageCtrl.languageForm.languageAbbreviation.$dirty && languageCtrl.languageForm.languageAbbreviation.$error.maxlength">Must be under 20 charaters long</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Display Order Number</label>
+                    <input type="number" class="form-control ng-class:{'error': languageCtrl.languageForm.displayOrder.$dirty && !dashboard.languageForm.displayOrder.$valid}"
+                           ng-model="languageCtrl.language.displayOrder"
+                           id="displayOrder"
+                           name="displayOrder"
+                           placeholder="Display Order"
+                           ng-required=true>
+
+                    <input type="text" class="form-control hidden" ng-model="languageCtrl.language.id" id="id" name="id">
+                    <div role="alert" class="help-inline error">
+                        <span class="error" ng-show="languageCtrl.languageForm.displayOrder.$dirty && languageCtrl.languageForm.displayOrder.$error.required">Display Order is required and must be a number</span>
+                    </div>
+                </div>
+                <button type="button" id="cmdSave" class="btn btn-success" ng-click="languageCtrl.addLanguage()">Save Changes</button>
+                <button type="button" id="cmdCancel" class="btn btn-warning" ng-click="languageCtrl.cancelLanguage()">Cancel</button>
+                <button type="button" id="cmdDelete" class="btn btn-danger" ng-click="languageCtrl.deleteLanguage()">Delete</button>               
+            </form>
+        </div>
+    </div>
+</script>
+
+
+@section Scripts{
+    <script src="~/Scripts/sabio.languages.services.js"></script>
+    <script type="text/javascript">
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                 .factory('$languagesService', LanguageServiceFactory);
+
+            LanguageServiceFactory.$inject = ['$baseService', '$sabio'];    //  $sabio is a reference to sabio.page object which is created in sabio.js
+
+            function LanguageServiceFactory($baseService, $sabio) {
+
+                var aSabioServiceObject = sabio.languages.services;
+
+                var newService = $baseService.merge(true, {}, aSabioServiceObject, $baseService);
+
+                console.log("language service", aSabioServiceObject);
+
+                return newService;
+            }
+
+        })();
+
+        (function () {
+            "use strict";
+
+            angular.module(APPNAME)
+                .controller('languageController', LanguageController);
+
+            angular.module('myModule', ['ui.bootstrap']);
+
+            LanguageController.$inject = ['$scope', '$baseController', "$languagesService"];
+
+            function LanguageController(
+                $scope
+                , $baseController
+                , $languagesService) {
+
+
+                var vm = this;//this points to a new {}
+                vm.$languagesService = $languagesService;
+                vm.$scope = $scope;
+                //-- this line to simulate inheritance
+                $baseController.merge(vm, $baseController);
+
+                //this is a wrapper for our small dependency on $scope
+                vm.notify = vm.$languagesService.getNotifier($scope);
+
+                vm.headingInfo = "Add / Edit Languages";
+                vm.languages = null;
+                vm.selectedLanguage = null;
+                vm.language = null;
+                vm.newLanguage = null;
+                vm.languageForm = null;
+                vm.languageFormVisible = false;
+
+                vm.selectLanguage = _selectLanguage;
+                vm.showLanguageForm = _showLanguageForm;
+                vm.addLanguage = _addLanguage;
+                vm.updateLanguage = _updateLanguage;
+                vm.deleteLanguage = _deleteLanguage;
+                vm.cancelLanguage = _cancelLanguage;
+
+                render();
+
+                function render() {
+                    vm.$languagesService.getAll(_getAllSuccess, _getAllError);
+                }
+
+                function _getAllSuccess(data) {
+                    vm.notify(function () {
+                        vm.languages = data.items;
+                    });
+                }
+
+                function _insertSuccess(data) {
+                    console.log("insert success");
+                    vm.language = null;
+                    vm.languageFormVisible = false;
+                    vm.$alertService.info("Saved new Language");
+                    render();
+                }
+
+                function _cancelLanguage() {
+                    console.log("reset form");
+                    vm.languageForm.$setPristine();
+                    vm.languageForm.$setUntouched();
+                    vm.language = null;
+                }               
+
+                function _showLanguageForm() {
+                    console.log("show form!");
+                    vm.language = null;
+                    vm.languageFormVisible = true;
+                }
+
+                function _addLanguage() {
+                    console.log("add language");
+                    if (vm.languageForm.$valid) {
+                        if (!vm.language.id) {
+                            console.log("data is valid! go save this object -> ", vm.language);
+                            vm.$languagesService.insert(vm.language, _insertSuccess, _insertError);
+                        }
+                        else {
+                            vm.$languagesService.update(vm.language, vm.language.id, _updateSuccess, _updateError);
+                        }
+                    }
+                    else {
+                        vm.$alertService.error("Invalid data, please check your entries and try again...", "Incorrect Input");
+                    }
+                }
+
+
+                function _updateLanguage() {
+                    if (vm.languageForm.$valid) {
+                        console.log("update --->", vm.language.id);
+                        vm.$languagesService.update(vm.language, vm.language.id, _updateSuccess, _updateError);
+
+                    }
+                    else {
+                        console.log("form submitted with invalid data :(");
+                    }
+                }
+
+                function _deleteLanguage() {
+                    if (vm.languageForm.$valid) {
+                        console.log("delete --->", vm.language.id);
+                        vm.$languagesService.delete(vm.language.id, _deleteSuccess, _deleteError);
+                        vm.language = null;
+                    }
+                }
+
+                function _selectLanguage(aLanguage) {
+                    console.log(aLanguage);
+                    vm.language = aLanguage;
+                    vm.languageFormVisible = true;
+                }         
+
+                function _updateSuccess(data) {
+                    console.log("update success");
+                    vm.$alertService.info("Changes Saved");
+                    vm.languageFormVisible = false;
+                    render();
+                }
+
+                function _deleteSuccess(data) {
+                    console.log("delete success");
+                    vm.$alertService.info("Language deleted!");
+                    render();
+                }
+
+                function _getAllError(jqXhr, status, error) {
+                    console.error(error);
+                }
+
+                function _insertError(jqXhr, status, error) {
+                    console.error(error);
+                }
+
+                function _updateError(jqXhr, status, error) {
+                    console.error(error);
+                }
+
+                function _deleteError(jqXhr, status, error) {
+                    console.error(error);
+                }
+            }
+        })();
+
+    </script>
+}
+
