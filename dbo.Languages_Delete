@@ -1,0 +1,24 @@
+USE [C16]
+GO
+/****** Object:  StoredProcedure [dbo].[Languages_Delete]    Script Date: 6/22/16 3:06:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROC [dbo].[Languages_Delete]
+@Id int
+AS
+BEGIN
+
+	/*
+
+		EXEC	[dbo].[Languages_Delete]
+				@Id = 3
+
+		SELECT	'Return Value' = @return_value
+	*/
+
+DELETE FROM dbo.Languages
+WHERE Id = @Id
+
+END
