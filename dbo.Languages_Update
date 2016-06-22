@@ -1,0 +1,33 @@
+USE [C16]
+GO
+/****** Object:  StoredProcedure [dbo].[Languages_Update]    Script Date: 6/22/16 3:09:24 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROC [dbo].[Languages_Update]
+
+ @LanguageName nvarchar(100)
+, @LanguageAbbreviation nvarchar(20) = null
+, @DisplayOrder int = null
+, @Id int
+AS
+BEGIN
+
+	/*
+		EXEC	[dbo].[Languages_Update]
+				
+				@LanguageName = N'update',
+				@LanguageAbbreviation = N'update',
+				@DisplayOrder = 100,
+				@Id = 5				
+	*/
+
+	UPDATE dbo.Languages
+	SET LanguageName = @LanguageName
+		,LanguageAbbreviation = @LanguageAbbreviation
+		,DisplayOrder = @DisplayOrder
+		,DateModified = GETUTCDATE()
+	WHERE Id = @Id	
+
+END
