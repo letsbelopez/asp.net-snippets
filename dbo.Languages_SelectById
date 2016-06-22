@@ -1,0 +1,25 @@
+USE [C16]
+GO
+/****** Object:  StoredProcedure [dbo].[Languages_SelectById]    Script Date: 6/22/16 3:08:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROC [dbo].[Languages_SelectById]
+	@Id int
+AS
+BEGIN
+	/*
+		DECLARE	@return_value int
+
+		EXEC	@return_value = [dbo].[Languages_SelectById]
+		@Id = 25
+
+		SELECT	'Return Value' = @return_value
+	*/
+
+	SELECT Id, LanguageName, LanguageAbbreviation, DisplayOrder
+	FROM dbo.Languages
+	WHERE Id = @Id
+
+END
